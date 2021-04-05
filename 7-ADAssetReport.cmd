@@ -1,0 +1,1 @@
+powershell.exe -executionpolicy unrestricted -command .\Manual-Runs\7-ADAssetReport\New-ADAssetReport.ps1

@@ -1,0 +1,1 @@
+powershell.exe -executionpolicy unrestricted -command .\Manual-Runs\Get-GroupsMatch-100MembersUp.ps1

@@ -1,0 +1,1 @@
+powershell.exe -executionpolicy unrestricted -command .\Manual-Runs\Get-ServiceAccounts.ps1
