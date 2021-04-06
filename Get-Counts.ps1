@@ -1,36 +1,34 @@
-﻿$Date = Get-Date -Format d
-$Counts = @()
+﻿$Counts = @()
 
 $csvFileName = "$env:userprofile\Desktop\ADData\Counts\Counts.csv"
 
-#Clear-Variable "final_local"
-
-$local = Get-Location;
 $final_local = "$env:userprofile\Desktop\ADData\Counts\";
+
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
 
 if(!$local.Equals("C:\"))
 {
-    cd "C:\";
+    Set-Location "C:\";
     if((Test-Path $final_local) -eq 0)
     {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
     ## if path already exists
     ## DB Connect
     elseif ((Test-Path $final_local) -eq 1)
     {
-        cd $final_local;
-        echo $final_local;
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
 
-
 $Domain = (Get-ADDomain).DistinguishedName
 $Users = (get-aduser -Filter *).count
-$UsersEnabled = (get-aduser -filter *|where {$_.enabled -eq "True"}).count 
-$UsersDisabled = (get-aduser -filter *|where {$_.enabled -ne "False"}).count
+$UsersEnabled = (get-aduser -filter *|Where-Object {$_.enabled -eq "True"}).count 
+$UsersDisabled = (get-aduser -filter *|Where-Object {$_.enabled -ne "False"}).count
 $Groups = (Get-ADGroup -Filter *).count
 $Contacts = (Get-ADObject -Filter 'ObjectClass -eq "contact"' -Searchbase (Get-ADDomain).distinguishedName).count
 $Computers = (Get-ADComputer -Filter *).count
@@ -49,7 +47,7 @@ Write-Host "Workstions =     "$Workstations
 Write-Host "Servers =        "$Servers
 Write-Host "Domain =         "$Domain
 Write-Host "GPOs =           "$GPOs
-Write-Host "OUs =           "$OUs
+Write-Host "OUs =            "$OUs
 
 #Use New-Object and Add-Member to create an object
 $Counts = New-Object System.Object
@@ -65,7 +63,6 @@ $Counts | Add-Member -MemberType NoteProperty -Name "Servers" -Value $Servers
 $Counts | Add-Member -MemberType NoteProperty -Name "GPOs" -Value $GPOs
 $Counts | Add-Member -MemberType NoteProperty -Name "OUs" -Value $OUs
 $Counts | Add-Member -MemberType NoteProperty -Name "Domain" -Value $Domain
-
 
 #Add newly created object to the array
 #$Counts += $Count

@@ -1,15 +1,35 @@
-﻿
-
-PROCESS #This is where the script executes 
+﻿PROCESS #This is where the script executes 
 { 
-    $path = Split-Path -parent "$env:userprofile\Desktop\ADData\AllADUsers\*.*" 
-    $pathexist = Test-Path -Path $path 
-    If ($pathexist -eq $false) 
-    {New-Item -type directory -Path $path} 
-    $date = get-date -format M.d.yyyy  
-     
-    $csvreportfile = $path + "\ALLADUsers_$date.csv" 
-     
+    $final_local = "$env:userprofile\Desktop\ADData\AllADUsers\" 
+
+    $date = get-date -format M.d.yyyy
+    $local = Get-Location;
+
+    if(!$local.Equals("C:\"))
+    {
+        Set-Location "C:\";
+        if((Test-Path $final_local) -eq 0)
+        {
+            mkdir $final_local;
+            Set-Location $final_local;
+        }
+
+        ## if path already exists
+        ## DB Connect
+        elseif ((Test-Path $final_local) -eq 1)
+        {
+            Set-Location $final_local;
+            Write-Output $final_local;
+        }
+    }
+    
+    #$path = Split-Path -parent "$env:userprofile\Desktop\ADData\AllADUsers\*.*" 
+    #$pathexist = Test-Path -Path $path 
+    #If ($pathexist -eq $false) 
+    #{New-Item -type directory -Path $path} 
+    
+    $csvreportfile = $final_local + "\ALLADUsers_$date.csv" 
+    
     #import the ActiveDirectory Module 
     Import-Module ActiveDirectory 
      
