@@ -289,6 +289,7 @@ else
 {
 	if ( [string]::IsNullOrEmpty($Domain) )
 	{
+		<#  Removing so that the script doesn't prompt the user 4/6/21-KB
 		$ArrReadHost = @('yes','y','no','n')
 		$Confirm = $null
 		
@@ -304,7 +305,7 @@ else
 			Exit
 		}
 		else
-		{
+		{#>
 			# Connect to the current forest
 			$ADSIForest = [System.DirectoryServices.ActiveDirectory.Forest]::GetCurrentForest()
 			
@@ -315,14 +316,14 @@ else
 			}
 		}
 	}
-	else
+	#else Removed as part of the above to make the script run without user input 4/6/21-KB
 	{
 		# Connect to the specified domain and retrieve the list of all dcs within this domain
 		$DomainContext = new-object System.directoryServices.ActiveDirectory.DirectoryContext("Domain",$Domain)
 		$ADSIDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain($DomainContext)
 		$DCs += $ADSIDomain.DomainControllers
 	}
-}
+#}
 
 # Treat list of domain controllers if existing data are not used
 if ( $PSCmdlet.ParameterSetName -ne "Data" )
