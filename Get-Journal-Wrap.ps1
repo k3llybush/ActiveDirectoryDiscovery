@@ -1,24 +1,25 @@
 ﻿$ErrorActionPreference = 'SilentlyContinue'
 
-$date = get-date -format M.d.yyyy 
+$final_local = "$env:userprofile\Desktop\ADData\DomainControllers\";
+
+$date = get-date -format M.d.yyyy
 $local = Get-Location;
-$final_local = "$env:userprofile\Desktop\ADData\DomainControllers";
 
 if(!$local.Equals("C:\"))
 {
-    cd "C:\";
+    Set-Location "C:\";
     if((Test-Path $final_local) -eq 0)
     {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
     ## if path already exists
     ## DB Connect
     elseif ((Test-Path $final_local) -eq 1)
     {
-        cd $final_local;
-        echo $final_local;
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
 
@@ -40,11 +41,11 @@ ForEach ($Event in $DCFRSEvents)
  {
  IF ($Event.EventID -eq “13568”)
     {
-        Write-Output “$DCHostName has logged a Journal Wrap in the event log." | Out-File C:\Users\adm_kwbush\Desktop\ADData\DomainControllers\JournalWrap.txt -append
+        Write-Output “$DCHostName has logged a Journal Wrap in the event log." | Out-File C:\Users\adm_kwbush\Desktop\ADData\DomainControllers\JournalWrap_$date.txt
     }
  }
   IF ($Event.EventID -eq “13503”)
     {
-        Write-Output “$DCHostName has logged a FRS stop in the event log." | Out-File C:\Users\adm_kwbush\Desktop\ADData\DomainControllers\JournalWrap-Stop.txt -append
+        Write-Output “$DCHostName has logged a FRS stop in the event log." | Out-File C:\Users\adm_kwbush\Desktop\ADData\DomainControllers\JournalWrap-Stop_$date.txt
     }
  }

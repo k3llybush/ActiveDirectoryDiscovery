@@ -1,5 +1,7 @@
-﻿$local = Get-Location;
-$final_local = "$env:userprofile\Desktop\ADData\GroupData\";
+﻿$final_local = "$env:userprofile\Desktop\ADData\GroupData\";
+
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
 
 if(!$local.Equals("C:\"))
 {
@@ -19,5 +21,5 @@ if(!$local.Equals("C:\"))
     }
 }
 $ErrorActionPreference = 'SilentlyContinue'
-Get-ADGroup -Filter {GroupCategory -eq 'Security'} | Where-Object{@(Get-ADGroupMember $_).Length -eq 0} | Select-Object name,distinguishedName | Select-Object | export-csv "$final_local\EmptySecGroups.txt"
-Get-ADGroup -Filter {GroupCategory -eq 'Distribution'} | Where-Object{@(Get-ADGroupMember $_).Length -eq 0} | Select-Object name,distinguishedName | Select-Object | export-csv "$final_local\EmptyDistroGroups.txt"
+Get-ADGroup -Filter {GroupCategory -eq 'Security'} | Where-Object{@(Get-ADGroupMember $_).Length -eq 0} | Select-Object name,distinguishedName | Select-Object | export-csv "$final_local\EmptySecGroups_$date.txt" -NoTypeInformation
+Get-ADGroup -Filter {GroupCategory -eq 'Distribution'} | Where-Object{@(Get-ADGroupMember $_).Length -eq 0} | Select-Object name,distinguishedName | Select-Object | export-csv "$final_local\EmptyDistroGroups_$date.txt" -NoTypeInformation
