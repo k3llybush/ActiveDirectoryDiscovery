@@ -1,29 +1,20 @@
-﻿$Date = Get-Date -Format d
-$Counts = @()
+﻿$final_local = "$env:userprofile\Desktop\ADData\DomainControllers\";
 
-#Clear-Variable "final_local"
-
+#$date = get-date -format M.d.yyyy
 $local = Get-Location;
-$final_local = "$env:userprofile\Desktop\ADData\DomainControllers\";
 
-if(!$local.Equals("C:\"))
-{
-    cd "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
+if (!$local.Equals("C:\")) {
+    Set-Location "C:\";
+    if ((Test-Path $final_local) -eq 0) {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
-    ## if path already exists
-    ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        cd $final_local;
-        echo $final_local;
+    elseif ((Test-Path $final_local) -eq 1) {
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
-
 
 Get-ADForest > $final_local\Forest.txt
 Get-ADDomain > $final_local\Domain.txt

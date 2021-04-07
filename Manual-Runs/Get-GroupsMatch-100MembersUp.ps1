@@ -216,12 +216,12 @@ ForEach ($GroupA in ($GroupList100 | `
         }
     }
 } 
-
+$date = get-date -format M.d.yyyy 
 $report | 
     Sort-Object CountEqual -Descending | 
     Select-Object NameA, NameB, CountA, CountB, CountEqual, MatchPercentA, `
         MatchPercentB, ScopeA, ScopeB, CategoryA, CategoryB, DNA, DNB | 
-    Export-CSV "$env:userprofile\Desktop\ADData\GroupData\GroupMembershipComparison.csv" -NoTypeInformation
+    Export-CSV "$env:userprofile\Desktop\ADData\GroupData\GroupMembershipComparison_$date.csv" -NoTypeInformation
 #endregion#####################################################################
 
 Get-ChildItem .\*.csv

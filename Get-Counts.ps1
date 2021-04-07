@@ -1,6 +1,6 @@
 ﻿$Counts = @()
 
-$csvFileName = "$env:userprofile\Desktop\ADData\Counts\Counts.csv"
+#$csvFileName = "$env:userprofile\Desktop\ADData\Counts\Counts.csv"
 
 $final_local = "$env:userprofile\Desktop\ADData\Counts\";
 
