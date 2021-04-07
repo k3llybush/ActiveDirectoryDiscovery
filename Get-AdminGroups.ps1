@@ -28,10 +28,16 @@ foreach ($g in $Groups) {
     if ([int]$3 -gt "2000") {
     }
     else {
-        $sid = $DomainSID.Value + "-" + $3
-        $Group = Get-ADGroup -Filter { SID -eq $sid }
-        $Name = $Group.Name
-        Get-ADGroupMember $Group  | Select-Object name, distinguishedName | Out-File "$final_local\$name.txt"
-    }
+        try {
+   
+            $sid = $DomainSID.Value + "-" + $3
+            $Group = Get-ADGroup -Filter { SID -eq $sid }
+            $Name = $Group.Name
+            Get-ADGroupMember $Name  | Select-Object name, distinguishedName | Out-File "$final_local\$name.txt"
+       
+        }
+        catch {}
+            
 
+    }
 }
