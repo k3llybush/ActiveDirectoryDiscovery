@@ -353,7 +353,7 @@ Add-Content $report "</html>"
 ########################################################################################
 #############################################Send Email#################################
 
-
+<#
 $subject = "Active Directory Health Monitor" 
 $body = Get-Content ".\ADreport.htm" 
 $smtp= New-Object System.Net.Mail.SmtpClient $smtphost 
@@ -364,6 +364,7 @@ $msg.subject = $subject
 $msg.body = $body 
 $msg.isBodyhtml = $true 
 $smtp.send($msg) 
+#>
 
 ########################################################################################
 
