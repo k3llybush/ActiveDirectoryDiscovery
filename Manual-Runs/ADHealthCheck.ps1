@@ -11,24 +11,18 @@ $date = get-date -format M.d.yyyy
 $local = Get-Location;
 $final_local = "$env:userprofile\Desktop\ADData\HealthCheck\";
 
-if(!$local.Equals("C:\"))
-{
-    cd "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
-        mkdir $final_local;
-        cd $final_local;
-    }
+if (!$local.Equals("C:\")) {
+   Set-Location "C:\";
+   if ((Test-Path $final_local) -eq 0) {
+       mkdir $final_local;
+       Set-Location $final_local;
+   }
 
-    ## if path already exists
-    ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        cd $final_local;
-        echo $final_local;
-    }
+   elseif ((Test-Path $final_local) -eq 1) {
+       Set-Location $final_local;
+       Write-Output $final_local;
+   }
 }
-
 
 $reportpath = "$env:userprofile\Desktop\ADData\HealthCheck\ADReport-$date.htm" 
 
@@ -359,7 +353,7 @@ Add-Content $report "</html>"
 ########################################################################################
 #############################################Send Email#################################
 
-
+<#
 $subject = "Active Directory Health Monitor" 
 $body = Get-Content ".\ADreport.htm" 
 $smtp= New-Object System.Net.Mail.SmtpClient $smtphost 
@@ -370,6 +364,7 @@ $msg.subject = $subject
 $msg.body = $body 
 $msg.isBodyhtml = $true 
 $smtp.send($msg) 
+#>
 
 ########################################################################################
 

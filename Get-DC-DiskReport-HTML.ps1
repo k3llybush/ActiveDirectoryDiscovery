@@ -27,32 +27,35 @@ $ErrorActionPreference = "Continue";
 $percentWarning = 15;
 $percentCritcal = 10;
 
-$local = Get-Location;
 $final_local = "$env:userprofile\Desktop\ADData\DomainControllers\DiskSpace\";
+
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
 
 if(!$local.Equals("C:\"))
 {
-    cd "C:\";
+    Set-Location "C:\";
     if((Test-Path $final_local) -eq 0)
     {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
+
     ## if path already exists
     ## DB Connect
     elseif ((Test-Path $final_local) -eq 1)
     {
-        cd $final_local;
-        echo $final_local;
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
 
 # REPORT PROPERTIES
 	# Path to the report
-		$reportPath = "$env:userprofile\Desktop\ADData\DomainControllers\DiskSpace\";
+		$reportPath = $final_local
 
 	# Report name
-		$reportName = "DiskSpaceRpt_$(get-date -format ddMMyyyy).html";
+		$reportName = "DiskSpaceRpt_$($date).html";
 
 # Path and Report name together
 $diskReport = $reportPath + $reportName
@@ -66,21 +69,20 @@ $whiteColor = "#FFFFFF"
 $i = 0;
 
 # Get computer list to check disk space
-$computers = Get-ADDomainController -filter * |select -ExpandProperty Name;
-$datetime = Get-Date -Format "MM-dd-yyyy_HHmmss";
+$computers = Get-ADDomainController -filter * |Select-Object -ExpandProperty Name;
 
-<# Remove the report if it has already been run today so it does not append to the existing report
+# Remove the report if it has already been run today so it does not append to the existing report
 If (Test-Path $diskReport)
     {
         Remove-Item $diskReport
     }
 
 # Cleanup old files..
-$Daysback = "-7"
+#$Daysback = "-7"
 $CurrentDate = Get-Date;
-$DateToDelete = $CurrentDate.AddDays($Daysback);
+$DateToDelete = $CurrentDate#.AddDays($Daysback);
 Get-ChildItem $reportPath | Where-Object { $_.LastWriteTime -lt $DatetoDelete } | Remove-Item;
-#>
+
 
 # Create and write HTML Header of report
 $titleDate = get-date -uformat "%m-%d-%Y - %A"

@@ -1,41 +1,37 @@
-﻿$local = Get-Location;
-$date = get-date -format M.d.yyyy 
-$final_local = "$env:userprofile\Desktop\ADData\GPO Data\NoSettings\$date";
+﻿Import-Module -name GroupPolicy
 
-if(!$local.Equals("C:\"))
-{
-    cd "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
+$final_local = "$env:userprofile\Desktop\ADData\GPOData\";
+
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
+
+if (!$local.Equals("C:\")) {
+    Set-Location "C:\";
+    if ((Test-Path $final_local) -eq 0) {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
     ## if path already exists
     ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        cd $final_local;
-        echo $final_local;
+    elseif ((Test-Path $final_local) -eq 1) {
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
-
-
-import-module grouppolicy
-
-function HasNoSettings{
+function HasNoSettings {
     $cExtNodes = $xmldata.DocumentElement.SelectNodes($cQueryString, $XmlNameSpaceMgr)
   
-    foreach ($cExtNode in $cExtNodes){
-        If ($cExtNode.HasChildNodes){
+    foreach ($cExtNode in $cExtNodes) {
+        If ($cExtNode.HasChildNodes) {
             Return $false
         }
     }
     
     $uExtNodes = $xmldata.DocumentElement.SelectNodes($uQueryString, $XmlNameSpaceMgr)
     
-    foreach ($uExtNode in $uExtNodes){
-       If ($uExtNode.HasChildNodes){
+    foreach ($uExtNode in $uExtNodes) {
+        If ($uExtNode.HasChildNodes) {
             Return $false
         }
     }
@@ -43,7 +39,7 @@ function HasNoSettings{
     Return $true
 }
 
-function configNamespace{
+function configNamespace {
     $script:xmlNameSpaceMgr = New-Object System.Xml.XmlNamespaceManager($xmldata.NameTable)
 
     $xmlNameSpaceMgr.AddNamespace("", $xmlnsGpSettings)
@@ -61,12 +57,12 @@ $xmlnsSchema = "http://www.w3.org/2001/XMLSchema"
 $cQueryString = "gp:Computer/gp:ExtensionData/gp:Extension"
 $uQueryString = "gp:User/gp:ExtensionData/gp:Extension"
 
-Get-GPO -All | ForEach { $gpo = $_ ; $_ | Get-GPOReport -ReportType xml | ForEach { $xmldata = [xml]$_ ; configNamespace ; If(HasNoSettings){$noSettingsGPOs += $gpo} }}
+Get-GPO -All | ForEach-Object { $gpo = $_ ; $_ | Get-GPOReport -ReportType xml | ForEach-Object { $xmldata = [xml]$_ ; configNamespace ; If (HasNoSettings) { $noSettingsGPOs += $gpo } } }
 
 If ($noSettingsGPOs.Count -eq 0) {
     "No GPO's Without Settings Were Found"
 }
-Else{
-    $noSettingsGPOs | Select DisplayName,ID | ft
-    $noSettingsGPOs | Select DisplayName,ID | Export-Csv "$final_local\gpos-no-settings.csv" -NoTypeInformation
+Else {
+    $noSettingsGPOs | Select-Object DisplayName, ID | Format-Table
+    $noSettingsGPOs | Select-Object DisplayName, ID | Export-Csv "$final_local\gpos-no-settings_$date.csv" -NoTypeInformation
 }

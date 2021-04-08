@@ -1,6 +1,6 @@
-﻿Import-Module grouppolicy
+﻿Import-Module -name GroupPolicy
 
-$final_local = "$env:userprofile\Desktop\ADData\GPO Data\UnLinked\";
+$final_local = "$env:userprofile\Desktop\ADData\GPOData\";
 
 $date = get-date -format M.d.yyyy
 $local = Get-Location;

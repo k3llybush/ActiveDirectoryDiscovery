@@ -1,32 +1,43 @@
-﻿$date = get-date -format M.d.yyyy 
-$local = Get-Location;
-$final_local = "$env:userprofile\Desktop\ADData\AdminGroups\$date";
+﻿$final_local = "$env:userprofile\Desktop\ADData\AdminGroups\$date";
 
-if(!$local.Equals("C:\"))
-{
-    cd "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
+
+if (!$local.Equals("C:\")) {
+    Set-Location "C:\";
+    if ((Test-Path $final_local) -eq 0) {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
     ## if path already exists
     ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        cd $final_local;
-        echo $final_local;
+    elseif ((Test-Path $final_local) -eq 1) {
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
 
+$DomainSID = (Get-ADDomain).DomainSID
 
-Get-ADGroupMember "Account Operators" | select name,distinguishedName | Out-File "$final_local\AccountOperators.txt"
-Get-ADGroupMember "Administrators" | select name,distinguishedName | Out-File "$final_local\builtinAdministrators.txt"
-Get-ADGroupMember "Backup Operators" | select name,distinguishedName | Out-File "$final_local\BackupOperators.txt"
-Get-ADGroupMember "Print Operators" | select name,distinguishedName | Out-File "$final_local\PrintOperators.txt"
-Get-ADGroupMember "Remote Desktop Users" | select name,distinguishedName | Out-File "$final_local\RDPUsers.txt"
-Get-ADGroupMember "Server Operators" | select name,distinguishedName | Out-File "$final_localServerOperators.txt"
-Get-ADGroupMember "DNSAdmins" | select name,distinguishedName | Out-File "$final_local\DNSAdmins.txt"
-Get-ADGroupMember "Domain ADmins" | select name,distinguishedName | Out-File "$final_local\DA.txt"
+$Groups = get-adgroup -Filter *
+foreach ($g in $Groups) {
+    $g = $g.sid.Value 
+    $3 = $g.substring($g.length - 4).trimstart("-")
 
+    if ([int]$3 -gt "2000") {
+    }
+    else {
+        try {
+   
+            $sid = $DomainSID.Value + "-" + $3
+            $Group = Get-ADGroup -Filter { SID -eq $sid }
+            $Name = $Group.Name
+            Get-ADGroupMember $Name  | Select-Object name, distinguishedName | Out-File "$final_local\$name.txt"
+       
+        }
+        catch {}
+            
+
+    }
+}

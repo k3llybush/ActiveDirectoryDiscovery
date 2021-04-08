@@ -1,22 +1,23 @@
-﻿$local = Get-Location;
-$date = get-date -format M.d.yyyy 
-$final_local = "$env:userprofile\Desktop\ADData\ComputerData\$date";
+﻿$final_local = "$env:userprofile\Desktop\ADData\ComputerData\";
+
+$date = get-date -format M.d.yyyy
+$local = Get-Location;
 
 if(!$local.Equals("C:\"))
 {
-    cd "C:\";
+    Set-Location "C:\";
     if((Test-Path $final_local) -eq 0)
     {
         mkdir $final_local;
-        cd $final_local;
+        Set-Location $final_local;
     }
 
     ## if path already exists
     ## DB Connect
     elseif ((Test-Path $final_local) -eq 1)
     {
-        cd $final_local;
-        echo $final_local;
+        Set-Location $final_local;
+        Write-Output $final_local;
     }
 }
 
@@ -30,5 +31,5 @@ Get-ADComputer -Filter {LastLogonTimeStamp -lt $time} -Properties LastLogonTimeS
   
 # Output hostname and lastLogonTimestamp into CSV 
 select-object Name,@{Name="Stamp"; Expression={[DateTime]::FromFileTime($_.lastLogonTimestamp)}} `
-    | export-csv "$final_local\OLD_Computer-90.csv" -notypeinformation
+    | export-csv "$final_local\OLD_Computer-90_$date.csv" -notypeinformation
 
