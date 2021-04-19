@@ -3,41 +3,27 @@
 $date = get-date -format M.d.yyyy
 $local = Get-Location;
 
-if (!$local.Equals("C:\")) {
-    Set-Location "C:\";
-    if ((Test-Path $final_local) -eq 0) {
-        mkdir $final_local;
-        Set-Location $final_local;
-    }
+if (!$local.Equals("C:\")) { Set-Location "C:\" }
 
-    ## if path already exists
-    ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1) {
-        Set-Location $final_local;
-        Write-Output $final_local;
-    }
+if ((Test-Path $final_local) -eq 0) {
+    New-item -Path $final_local -ItemType "directory"
+    Set-Location $final_local;
+}
+elseif ((Test-Path $final_local) -eq 1) {
+    Set-Location $final_local
 }
 
 $DomainSID = (Get-ADDomain).DomainSID
+$i = 0
 
-$Groups = get-adgroup -Filter *
-foreach ($g in $Groups) {
-    $g = $g.sid.Value 
-    $3 = $g.substring($g.length - 4).trimstart("-")
-
-    if ([int]$3 -gt "2000") {
+foreach ($_ in 1..2001) {
+    $i++
+    
+    try {
+        $sid = $DomainSID.Value + "-$i"
+        $Group = Get-ADGroup -Filter { SID -eq $sid }
+        $Name = $Group.Name
+        Get-ADGroupMember $Name  | Select-Object name, distinguishedName | Out-File "$final_local\$name.txt"
     }
-    else {
-        try {
-   
-            $sid = $DomainSID.Value + "-" + $3
-            $Group = Get-ADGroup -Filter { SID -eq $sid }
-            $Name = $Group.Name
-            Get-ADGroupMember $Name  | Select-Object name, distinguishedName | Out-File "$final_local\$name.txt"
-       
-        }
-        catch {}
-            
-
-    }
+    catch {}
 }
