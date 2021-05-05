@@ -32,30 +32,22 @@ $final_local = "$env:userprofile\Desktop\ADData\DomainControllers\DiskSpace\";
 $date = get-date -format M.d.yyyy
 $local = Get-Location;
 
-if(!$local.Equals("C:\"))
-{
-    Set-Location "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
-        mkdir $final_local;
-        Set-Location $final_local;
-    }
+if (!$local.Equals("C:\")) { Set-Location "C:\" }
 
-    ## if path already exists
-    ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        Set-Location $final_local;
-        Write-Output $final_local;
-    }
+if ((Test-Path $final_local) -eq 0) {
+	New-item -Path $final_local -ItemType "directory"
+	Set-Location $final_local;
+}
+elseif ((Test-Path $final_local) -eq 1) {
+	Set-Location $final_local
 }
 
 # REPORT PROPERTIES
-	# Path to the report
-		$reportPath = $final_local
+# Path to the report
+$reportPath = $final_local
 
-	# Report name
-		$reportName = "DiskSpaceRpt_$($date).html";
+# Report name
+$reportName = "DiskSpaceRpt_$($date).html";
 
 # Path and Report name together
 $diskReport = $reportPath + $reportName
@@ -69,13 +61,12 @@ $whiteColor = "#FFFFFF"
 $i = 0;
 
 # Get computer list to check disk space
-$computers = Get-ADDomainController -filter * |Select-Object -ExpandProperty Name;
+$computers = Get-ADDomainController -filter * | Select-Object -ExpandProperty Name;
 
 # Remove the report if it has already been run today so it does not append to the existing report
-If (Test-Path $diskReport)
-    {
-        Remove-Item $diskReport
-    }
+If (Test-Path $diskReport) {
+	Remove-Item $diskReport
+}
 
 # Cleanup old files..
 #$Daysback = "-7"
@@ -125,10 +116,10 @@ $header = "
 		</tr>
 		</table>
 "
- Add-Content $diskReport $header
+Add-Content $diskReport $header
 
 # Create and write Table header for report
- $tableHeader = "
+$tableHeader = "
  <table width='100%'><tbody>
 	<tr bgcolor=#CCCCCC>
     <td width='10%' align='center'>Server</td>
@@ -144,35 +135,31 @@ Add-Content $diskReport $tableHeader
  
 # Start processing disk space reports against a list of servers
 [string]$dataRow = $null
-  foreach($computer in $computers)
-	{	
+foreach ($computer in $computers) {	
 	$disks = Get-WmiObject -ComputerName $computer -Class Win32_LogicalDisk -Filter "DriveType = 3"
 	$computer = $computer.toupper()
-		foreach($disk in $disks)
-	{        
+	foreach ($disk in $disks) {        
 		$deviceID = $disk.DeviceID;
-        $volName = $disk.VolumeName;
+		$volName = $disk.VolumeName;
 		[float]$size = $disk.Size;
 		[float]$freespace = $disk.FreeSpace; 
 		$percentFree = [Math]::Round(($freespace / $size) * 100, 2);
 		$sizeGB = [Math]::Round($size / 1073741824, 2);
 		$freeSpaceGB = [Math]::Round($freespace / 1073741824, 2);
-        $usedSpaceGB = [Math]::Round(($sizeGB - $freeSpaceGB),2);
-        $color = $whiteColor;
+		$usedSpaceGB = [Math]::Round(($sizeGB - $freeSpaceGB), 2);
+		$color = $whiteColor;
 
-# Set background color to Orange if just a warning
-	if($percentFree -lt $percentWarning)      
-		{
-	   $color = $orangeColor	
-        }
-# Set background color to Orange if space is Critical
-      if($percentFree -lt $percentCritcal)
-        {
-        $color = $redColor
-       }        
+		# Set background color to Orange if just a warning
+		if ($percentFree -lt $percentWarning) {
+			$color = $orangeColor	
+		}
+		# Set background color to Orange if space is Critical
+		if ($percentFree -lt $percentCritcal) {
+			$color = $redColor
+		}        
  
- # Create table data rows 
-    $dataRow = "
+		# Create table data rows 
+		$dataRow = "
 		<tr>
         <td width='10%'>$computer</td>
 		<td width='5%' align='center'>$deviceID</td>
@@ -183,23 +170,23 @@ Add-Content $diskReport $tableHeader
 		<td width='5%' bgcolor=`'$color`' align='center'>$percentFree</td>
 		</tr>
 "
-Add-Content $diskReport $dataRow;
-Write-Host -ForegroundColor DarkYellow "$computer $deviceID percentage free space = $percentFree";
-    $i++		
-		}
+		Add-Content $diskReport $dataRow;
+		Write-Host -ForegroundColor DarkYellow "$computer $deviceID percentage free space = $percentFree";
+		$i++		
 	}
+}
 
 
 # Create table at end of report showing legend of colors for the critical and warning
- $tableDescription = "
+$tableDescription = "
  </table><br><table width='20%'>
 	<tr bgcolor='White'>
     <td width='10%' align='center' bgcolor='#FBB917'>Warning less than 15% free space</td>
 	<td width='10%' align='center' bgcolor='#FF0000'>Critical less than 10% free space</td>
 	</tr>
 "
- 	Add-Content $diskReport $tableDescription
-	Add-Content $diskReport "</body></html>"
+Add-Content $diskReport $tableDescription
+Add-Content $diskReport "</body></html>"
 
 <# Send Notification if alert $i is greater then 0
 if ($i -gt 0)

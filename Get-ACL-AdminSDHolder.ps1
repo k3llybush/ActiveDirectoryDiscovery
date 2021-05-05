@@ -3,17 +3,14 @@
 $date = get-date -format M.d.yyyy
 $local = Get-Location;
 
-if (!$local.Equals("C:\")) {
-    Set-Location "C:\";
-    if ((Test-Path $final_local) -eq 0) {
-        mkdir $final_local;
-        Set-Location $final_local;
-    }
+if (!$local.Equals("C:\")) { Set-Location "C:\" }
 
-    elseif ((Test-Path $final_local) -eq 1) {
-        Set-Location $final_local;
-        Write-Output $final_local;
-    }
+if ((Test-Path $final_local) -eq 0) {
+    New-item -Path $final_local -ItemType "directory"
+    Set-Location $final_local;
+}
+elseif ((Test-Path $final_local) -eq 1) {
+    Set-Location $final_local
 }
 
 Import-Module ActiveDirectory

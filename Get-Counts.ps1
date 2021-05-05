@@ -1,28 +1,18 @@
 ﻿$Counts = @()
 
-#$csvFileName = "$env:userprofile\Desktop\ADData\Counts\Counts.csv"
-
 $final_local = "$env:userprofile\Desktop\ADData\Counts\";
 
 $date = get-date -format M.d.yyyy
 $local = Get-Location;
 
-if(!$local.Equals("C:\"))
-{
-    Set-Location "C:\";
-    if((Test-Path $final_local) -eq 0)
-    {
-        mkdir $final_local;
-        Set-Location $final_local;
-    }
+if (!$local.Equals("C:\")) { Set-Location "C:\" }
 
-    ## if path already exists
-    ## DB Connect
-    elseif ((Test-Path $final_local) -eq 1)
-    {
-        Set-Location $final_local;
-        Write-Output $final_local;
-    }
+if ((Test-Path $final_local) -eq 0) {
+    New-item -Path $final_local -ItemType "directory"
+    Set-Location $final_local;
+}
+elseif ((Test-Path $final_local) -eq 1) {
+    Set-Location $final_local
 }
 
 $Domain = (Get-ADDomain).DistinguishedName
@@ -32,8 +22,9 @@ $UsersDisabled = (get-aduser -filter *|Where-Object {$_.enabled -ne "False"}).co
 $Groups = (Get-ADGroup -Filter *).count
 $Contacts = (Get-ADObject -Filter 'ObjectClass -eq "contact"' -Searchbase (Get-ADDomain).distinguishedName).count
 $Computers = (Get-ADComputer -Filter *).count
-$Workstations = (Get-ADComputer -LDAPFilter "(&(objectClass=Computer)(!operatingSystem=*server*))" -Searchbase (Get-ADDomain).distinguishedName).count
+$Workstations = (Get-ADComputer -LDAPFilter "(&(objectClass=Computer)(!operatingSystem=*server*)(operatingSystem=*windows*))" -Searchbase (Get-ADDomain).distinguishedName).count
 $Servers = (Get-ADComputer -LDAPFilter "(&(objectClass=Computer)(operatingSystem=*server*))" -Searchbase (Get-ADDomain).distinguishedName).count
+$OtherComputer = (Get-ADComputer -LDAPFilter "(&(objectClass=Computer)(!operatingSystem=*server*)(!operatingSystem=*windows*))" -Searchbase (Get-ADDomain).distinguishedName).count
 $GPOs = (Get-GPO -All).count
 $OUs = (Get-ADOrganizationalUnit -Filter *).count
 
@@ -45,6 +36,7 @@ Write-Host "Contacts =       "$Contacts
 Write-Host "Computers =      "$Computers
 Write-Host "Workstions =     "$Workstations
 Write-Host "Servers =        "$Servers
+Write-Host "Other Computers ="$OtherComputer
 Write-Host "Domain =         "$Domain
 Write-Host "GPOs =           "$GPOs
 Write-Host "OUs =            "$OUs
@@ -60,14 +52,12 @@ $Counts | Add-Member -MemberType NoteProperty -Name "Contacts" -Value $Contacts
 $Counts | Add-Member -MemberType NoteProperty -Name "Computers" -Value $Computers
 $Counts | Add-Member -MemberType NoteProperty -Name "Workstations" -Value $Workstations
 $Counts | Add-Member -MemberType NoteProperty -Name "Servers" -Value $Servers
+$Counts | Add-Member -MemberType NoteProperty -Name "Other Computer" -Value $OtherComputer
 $Counts | Add-Member -MemberType NoteProperty -Name "GPOs" -Value $GPOs
 $Counts | Add-Member -MemberType NoteProperty -Name "OUs" -Value $OUs
 $Counts | Add-Member -MemberType NoteProperty -Name "Domain" -Value $Domain
 
-#Add newly created object to the array
-#$Counts += $Count
-
 #Finally, use Export-Csv to export the data to a csv file
-$Counts | Export-Csv -NoTypeInformation -Path "$env:userprofile\Desktop\ADData\Counts\Counts.csv" -Append
+$Counts | Export-Csv -NoTypeInformation -Path "$final_local\Counts.csv" -Append
 
 
