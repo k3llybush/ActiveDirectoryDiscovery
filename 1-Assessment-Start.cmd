@@ -1,3 +1,4 @@
+powershell.exe -executionpolicy unrestricted -command .\Get-ACL-AdminSDHolder.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-ACL-RootDSE.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-ADGeneralData.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-AdminGroups.ps1
@@ -7,6 +8,10 @@ powershell.exe -executionpolicy unrestricted -command .\Get-Computer-90DayOld.ps
 powershell.exe -executionpolicy unrestricted -command .\Get-Counts.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-DC-DiskReport-HTML.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-DC-IPAdresses.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-DomainLastBackup.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-ForestInfo-Trimarc.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-GPOMappings.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-GPOMissingPermissions.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-GPOs-Disabled.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-GPOs-InventoryReport.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-GPOs-NoSettings.ps1
@@ -14,6 +19,8 @@ powershell.exe -executionpolicy unrestricted -command .\Get-GPOs-ReportsAll.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-GPOs-Unlinked.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-Groups-Empty.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-Journal-Wrap.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-MissingSubnets.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-OU-EmptyData.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-Password-ExpiryDate.ps1
 powershell.exe -executionpolicy unrestricted -command .\Get-Password-NeverExpires.ps1
+powershell.exe -executionpolicy unrestricted -command .\Get-WinADPriviligedObjects.ps1
