@@ -1,13 +1,4 @@
 ﻿<#.
-SCRIPTNAME: Get-ADForestInfo.ps1
-AUTHOR: Sean Metcalf
-AUTHOR EMAIL: sean@trimarcsecurity.com
-COMPANY: Trimarc Security, LLC (Trimarc)
-WEBSITE: https://www.TrimarcSecurity.com
-COPYRIGHT: © 2018 - 2019 Trimarc Security, LLC (Trimarc)
-This script and all elements within it are intellectual property owned by Trimarc Security, LLC (Trimarc) and are not to be used without permission.
-No warranty or suitability of use is stated or implied.
-
 Last Updated: 5/07/2019
 Version 1.1.4
 
